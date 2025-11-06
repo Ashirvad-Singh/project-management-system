@@ -29,7 +29,10 @@ app.use(cors({
 
 //import the routes
 import helthCheckRouter from './routes/healthcheck.routes.js';
+import authRouter from './routes/auth.routes.js'
 app.use("/api/v1/healthcheck",helthCheckRouter)
+app.use("/api/v1/auth",authRouter)
+
 
 app.get('/',(req,res)=>{
     res.send("Welcome to Base Campy")
