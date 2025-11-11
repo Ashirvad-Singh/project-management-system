@@ -84,14 +84,26 @@ userSchema.methods.generateRefreshToken = function () {
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );
 };
+// Generate forgot password token
+userSchema.methods.generateForgotPasswordToken = function () {
+  const unhashedToken = crypto.randomBytes(20).toString("hex");
+  const hashedToken = crypto.createHash("sha256").update(unhashedToken).digest("hex");
+
+  // set token + expiry on the user instance
+  this.forgotPasswordToken = hashedToken;
+  this.forgotPasswordExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes validity
+
+  return unhashedToken; // return unhashed so you can email it
+};
 
 // Generate temporary (verification) token
 userSchema.methods.generateTemporaryToken = function () {
-  const unHashedToken = crypto.randomBytes(20).toString("hex");
-  const hashedToken = crypto.createHash("sha256").update(unHashedToken).digest("hex");
+  const unhashedToken = crypto.randomBytes(20).toString("hex"); // lowercase h
+  const hashedToken = crypto.createHash("sha256").update(unhashedToken).digest("hex");
   const tokenExpiry = new Date(Date.now() + 20 * 60 * 1000); // 20 minutes
 
-  return { unHashedToken, hashedToken, tokenExpiry };
+  return { unhashedToken, hashedToken, tokenExpiry }; // lowercase key name
 };
+
 
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
